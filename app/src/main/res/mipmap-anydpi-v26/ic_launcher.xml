@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Exact iOS app icon (blue-gradient LED dot grid) as a full-bleed adaptive
+     icon. The artwork already includes its own background, so it fills the
+     background layer edge to edge; the launcher mask just rounds the corners. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/ic_launcher_background" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+    <background android:drawable="@drawable/ic_launcher_ios" />
+    <foreground android:drawable="@android:color/transparent" />
 </adaptive-icon>

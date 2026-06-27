@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DisplaySettings
-import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.SettingsRemote
+import androidx.compose.material.icons.filled.Signpost
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -40,7 +40,7 @@ private enum class Tab(val label: String, val icon: ImageVector) {
     Display("Display", Icons.Filled.DisplaySettings),
     Stocks("Stocks", Icons.AutoMirrored.Filled.ShowChart),
     Weather("Weather", Icons.Filled.Cloud),
-    Sign("Sign", Icons.Filled.Campaign),
+    Sign("Sign", Icons.Filled.Signpost),
 }
 
 @Composable
