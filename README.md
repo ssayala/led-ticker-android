@@ -16,6 +16,15 @@ prereq gating, preset chips, countdown timer). The look and feel is native
 Android: Material You dynamic color, a bottom navigation bar, Material 3
 components, and the system pairing dialog for BLE bonding.
 
+<p align="center">
+  <img src="screenshots/device.png"  width="18%" alt="Device tab" />
+  <img src="screenshots/display.png" width="18%" alt="Display tab" />
+  <img src="screenshots/stocks.png"  width="18%" alt="Stocks tab" />
+  <img src="screenshots/weather.png" width="18%" alt="Weather tab" />
+  <img src="screenshots/sign.png"    width="18%" alt="Sign tab" />
+</p>
+<p align="center"><sub>Device · Display · Stocks · Weather · Sign — shown in the built-in simulated-device mode</sub></p>
+
 The wire format is defined by the firmware's
 [`BLE_PROTOCOL.md`](https://github.com/ssayala/esp32-led-simple/blob/main/BLE_PROTOCOL.md)
 — the public, app-agnostic contract both apps and the CLI implement. Keep
