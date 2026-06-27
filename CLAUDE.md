@@ -2,7 +2,7 @@
 
 Guidance for Claude Code working in this folder. This is an open-source
 (Apache-2.0) repo, developed cloned as the `android/` subfolder of the firmware
-repo (`esp32-led-simple`), which gitignores it. The firmware, `BLE_PROTOCOL.md`
+repo (`led-ticker`), which gitignores it. The firmware, `BLE_PROTOCOL.md`
 (the shared wire contract), and the `tools/led.py` CLI sit one level up at
 `../` during development.
 

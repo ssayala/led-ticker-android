@@ -2,9 +2,9 @@
 
 Native Android (Kotlin + Jetpack Compose + Material 3) app that configures the
 ESP32 LED Ticker over BLE from your Android phone or tablet. It's the Android
-counterpart of the iOS app and the [Python CLI](https://github.com/ssayala/esp32-led-simple/tree/main/tools), speaking the same BLE service.
+counterpart of the iOS app and the [Python CLI](https://github.com/ssayala/led-ticker/tree/main/tools), speaking the same BLE service.
 
-> Part of the open-source [LED Ticker](https://github.com/ssayala/esp32-led-simple)
+> Part of the open-source [LED Ticker](https://github.com/ssayala/led-ticker)
 > project. Clone it on its own and build — nothing here depends on the firmware
 > repo. (The maintainer happens to clone it as the firmware repo's `android/`
 > subfolder so the firmware, the BLE protocol doc, and the Python CLI sit
@@ -26,7 +26,7 @@ components, and the system pairing dialog for BLE bonding.
 <p align="center"><sub>Device · Display · Stocks · Weather · Sign — shown in the built-in simulated-device mode</sub></p>
 
 The wire format is defined by the firmware's
-[`BLE_PROTOCOL.md`](https://github.com/ssayala/esp32-led-simple/blob/main/BLE_PROTOCOL.md)
+[`BLE_PROTOCOL.md`](https://github.com/ssayala/led-ticker/blob/main/BLE_PROTOCOL.md)
 — the public, app-agnostic contract both apps and the CLI implement. Keep
 `model/Payloads.kt` in sync with it.
 
@@ -89,8 +89,8 @@ sync:
 
 - `model/Payloads.kt` is dependency-free and unit-tested in
   `app/src/test/` — the byte-for-byte wire format must match the firmware's
-  [`BLE_PROTOCOL.md`](https://github.com/ssayala/esp32-led-simple/blob/main/BLE_PROTOCOL.md)
-  and [`tools/led.py`](https://github.com/ssayala/esp32-led-simple/tree/main/tools).
+  [`BLE_PROTOCOL.md`](https://github.com/ssayala/led-ticker/blob/main/BLE_PROTOCOL.md)
+  and [`tools/led.py`](https://github.com/ssayala/led-ticker/tree/main/tools).
 - `BleManager` is owned by the `Application` (survives config changes), runs a
   single serial GATT operation queue, and tracks bond state for the auth gate.
 - BLE permissions (`BLUETOOTH_SCAN` with `neverForLocation`, `BLUETOOTH_CONNECT`)
