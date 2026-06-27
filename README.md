@@ -17,11 +17,11 @@ Android: Material You dynamic color, a bottom navigation bar, Material 3
 components, and the system pairing dialog for BLE bonding.
 
 <p align="center">
-  <img src="screenshots/device.png"  width="18%" alt="Device tab" />
-  <img src="screenshots/display.png" width="18%" alt="Display tab" />
-  <img src="screenshots/stocks.png"  width="18%" alt="Stocks tab" />
-  <img src="screenshots/weather.png" width="18%" alt="Weather tab" />
-  <img src="screenshots/sign.png"    width="18%" alt="Sign tab" />
+  <picture><source media="(prefers-color-scheme: dark)" srcset="screenshots/device-dark.png"><img src="screenshots/device.png" width="18%" alt="Device tab" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="screenshots/display-dark.png"><img src="screenshots/display.png" width="18%" alt="Display tab" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="screenshots/stocks-dark.png"><img src="screenshots/stocks.png" width="18%" alt="Stocks tab" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="screenshots/weather-dark.png"><img src="screenshots/weather.png" width="18%" alt="Weather tab" /></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="screenshots/sign-dark.png"><img src="screenshots/sign.png" width="18%" alt="Sign tab" /></picture>
 </p>
 <p align="center"><sub>Device · Display · Stocks · Weather · Sign — shown in the built-in simulated-device mode</sub></p>
 
