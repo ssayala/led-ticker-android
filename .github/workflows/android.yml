@@ -1,9 +1,12 @@
 name: Android CI
 
-# Build the debug APK and run the host unit tests on every push/PR.
+# - Every push to main / PR: build the debug APK and run unit tests (no secrets).
+# - Push a version tag (v1.0, v1.2.3, ...): build a SIGNED release AAB + APK
+#   and attach them to a GitHub Release.
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
   workflow_dispatch:
 
@@ -12,8 +15,8 @@ permissions:
 
 jobs:
   build:
+    name: Build debug APK & test
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +31,6 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Set up Gradle
-        # Caches Gradle + validates the wrapper jar checksum.
         uses: gradle/actions/setup-gradle@v4
 
       - name: Unit tests
@@ -51,3 +53,57 @@ jobs:
           name: unit-test-report
           path: app/build/reports/tests/testDebugUnitTest
           if-no-files-found: ignore
+
+  release:
+    name: Signed release (AAB + APK)
+    # Only on version tags. Requires these repo secrets:
+    #   KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the GitHub Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Decode signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+
+      - name: Build signed AAB + APK
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew bundleRelease assembleRelease --no-daemon
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ github.ref_name }}
+          path: |
+            app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/apk/release/app-release.apk
+          generate_release_notes: true
