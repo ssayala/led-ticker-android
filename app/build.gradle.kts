@@ -15,8 +15,11 @@ android {
         applicationId = "io.github.ssayala.ledticker"
         minSdk = 31
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        // Derived from the git tag by CI (the release job exports VERSION_NAME
+        // / VERSION_CODE from a v1.2.3 tag). Local / non-tag builds fall back
+        // to a dev version so they still build.
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = System.getenv("VERSION_NAME") ?: "1.0-dev"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

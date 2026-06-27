@@ -1,8 +1,9 @@
 name: Android CI
 
 # - Every push to main / PR: build the debug APK and run unit tests (no secrets).
-# - Push a version tag (v1.0, v1.2.3, ...): build a SIGNED release AAB + APK
-#   and attach them to a GitHub Release.
+# - Push a version tag (v1.0, v1.2.3, ...): build a SIGNED release AAB + APK,
+#   attach them to a GitHub Release, and (if configured) upload the AAB to the
+#   Play Store internal-testing track.
 on:
   push:
     branches: [main]
@@ -58,6 +59,7 @@ jobs:
     name: Signed release (AAB + APK)
     # Only on version tags. Requires these repo secrets:
     #   KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
+    # Optional (enables the Play upload step): PLAY_SERVICE_ACCOUNT_JSON
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -78,6 +80,20 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Derive version from tag
+        # v1.2.3 -> versionName 1.2.3, versionCode 1*10000 + 2*100 + 3 = 10203.
+        # Monotonic for semver with minor/patch < 100. Non-digits are stripped
+        # so pre-release suffixes (v1.2.3-rc1) don't break the arithmetic.
+        run: |
+          NAME="${GITHUB_REF_NAME#v}"
+          MAJ=$(echo "$NAME" | cut -d. -f1 | tr -dc 0-9)
+          MIN=$(echo "$NAME" | cut -d. -f2 | tr -dc 0-9)
+          PAT=$(echo "$NAME" | cut -d. -f3 | tr -dc 0-9)
+          CODE=$(( ${MAJ:-0}*10000 + ${MIN:-0}*100 + ${PAT:-0} ))
+          echo "VERSION_NAME=$NAME" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$CODE" >> "$GITHUB_ENV"
+          echo "Resolved ${GITHUB_REF_NAME} -> versionName=$NAME versionCode=$CODE"
+
       - name: Decode signing keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -89,6 +105,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          # VERSION_NAME / VERSION_CODE come from the previous step via GITHUB_ENV.
         run: ./gradlew bundleRelease assembleRelease --no-daemon
 
       - name: Upload release artifacts
@@ -107,3 +124,27 @@ jobs:
             app/build/outputs/bundle/release/app-release.aab
             app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true
+
+      - name: Detect Play credentials
+        env:
+          PLAY_SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$PLAY_SA" ]; then
+            echo "PLAY_ENABLED=true" >> "$GITHUB_ENV"
+          else
+            echo "PLAY_ENABLED=false" >> "$GITHUB_ENV"
+            echo "PLAY_SERVICE_ACCOUNT_JSON not set — skipping Play upload."
+          fi
+
+      - name: Upload AAB to Play (internal track)
+        # Skipped until PLAY_SERVICE_ACCOUNT_JSON exists. The app must already
+        # be created in the Play Console and have one manual upload before the
+        # API can target it.
+        if: env.PLAY_ENABLED == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: io.github.ssayala.ledticker
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
