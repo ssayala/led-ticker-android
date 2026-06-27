@@ -1,9 +1,8 @@
 name: Android CI
 
 # - Every push to main / PR: build the debug APK and run unit tests (no secrets).
-# - Push a version tag (v1.0, v1.2.3, ...): build a SIGNED release AAB + APK,
-#   attach them to a GitHub Release, and (if configured) upload the AAB to the
-#   Play Store internal-testing track.
+# - Push a version tag (v1.0, v1.2.3, ...): build a SIGNED release APK and
+#   attach it to a GitHub Release for people to sideload.
 on:
   push:
     branches: [main]
@@ -56,10 +55,9 @@ jobs:
           if-no-files-found: ignore
 
   release:
-    name: Signed release (AAB + APK)
+    name: Signed release APK
     # Only on version tags. Requires these repo secrets:
     #   KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
-    # Optional (enables the Play upload step): PLAY_SERVICE_ACCOUNT_JSON
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -99,52 +97,24 @@ jobs:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
 
-      - name: Build signed AAB + APK
+      - name: Build signed release APK
         env:
           KEYSTORE_FILE: ${{ runner.temp }}/release.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           # VERSION_NAME / VERSION_CODE come from the previous step via GITHUB_ENV.
-        run: ./gradlew bundleRelease assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon
 
-      - name: Upload release artifacts
+      - name: Upload release APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-${{ github.ref_name }}
-          path: |
-            app/build/outputs/bundle/release/app-release.aab
-            app/build/outputs/apk/release/app-release.apk
+          name: led-ticker-${{ github.ref_name }}
+          path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            app/build/outputs/bundle/release/app-release.aab
-            app/build/outputs/apk/release/app-release.apk
+          files: app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true
-
-      - name: Detect Play credentials
-        env:
-          PLAY_SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
-        run: |
-          if [ -n "$PLAY_SA" ]; then
-            echo "PLAY_ENABLED=true" >> "$GITHUB_ENV"
-          else
-            echo "PLAY_ENABLED=false" >> "$GITHUB_ENV"
-            echo "PLAY_SERVICE_ACCOUNT_JSON not set — skipping Play upload."
-          fi
-
-      - name: Upload AAB to Play (internal track)
-        # Skipped until PLAY_SERVICE_ACCOUNT_JSON exists. The app must already
-        # be created in the Play Console and have one manual upload before the
-        # API can target it.
-        if: env.PLAY_ENABLED == 'true'
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: io.github.ssayala.ledticker
-          releaseFiles: app/build/outputs/bundle/release/app-release.aab
-          track: internal
-          status: completed
