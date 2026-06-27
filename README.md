@@ -26,6 +26,19 @@ in sync with it.
 > back to an **in-app PIN dialog** that writes the PIN to the Auth
 > characteristic (the same fallback the Python CLI uses).
 
+## Install
+
+Download the latest signed APK — **`app-release.apk`** — from the
+[**Releases page**](https://github.com/ssayala/led-ticker-android/releases/latest),
+then on your Android device (12+ / API 31):
+
+1. Open the downloaded APK (tap the download notification, or find it in Files).
+2. If prompted, allow your browser / Files app to **install unknown apps**.
+3. Tap **Install**.
+
+Every release is signed with the same key, so updates install over the top
+without uninstalling. There's no Google Play listing — sideload only.
+
 ## Requirements
 
 - **Android Studio** (Ladybug or newer) with the **Android 16 / API 36** SDK
