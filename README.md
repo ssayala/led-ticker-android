@@ -2,12 +2,13 @@
 
 Native Android (Kotlin + Jetpack Compose + Material 3) app that configures the
 ESP32 LED Ticker over BLE from your Android phone or tablet. It's the Android
-counterpart of the iOS app and `tools/led.py`, speaking the same BLE service.
+counterpart of the iOS app and the [Python CLI](https://github.com/ssayala/esp32-led-simple/tree/main/tools), speaking the same BLE service.
 
-> This is a **private** repository. It's developed cloned into the firmware
-> repo as the `android/` subfolder (which that repo gitignores), so the
-> firmware, the BLE protocol doc, and the CLI sit alongside it during
-> development.
+> Part of the open-source [LED Ticker](https://github.com/ssayala/esp32-led-simple)
+> project. Clone it on its own and build — nothing here depends on the firmware
+> repo. (The maintainer happens to clone it as the firmware repo's `android/`
+> subfolder so the firmware, the BLE protocol doc, and the Python CLI sit
+> alongside during development, but that's just convenience, not a requirement.)
 
 Five tabs (Device, Display, Stocks, Weather, Sign), the same BLE contract, and
 the same per-tab behaviour as the iOS app (dirty tracking, optimistic writes,
@@ -15,9 +16,10 @@ prereq gating, preset chips, countdown timer). The look and feel is native
 Android: Material You dynamic color, a bottom navigation bar, Material 3
 components, and the system pairing dialog for BLE bonding.
 
-The wire format is defined by the firmware's `BLE_PROTOCOL.md` — the public,
-app-agnostic contract both apps and the CLI implement. Keep `model/Payloads.kt`
-in sync with it.
+The wire format is defined by the firmware's
+[`BLE_PROTOCOL.md`](https://github.com/ssayala/esp32-led-simple/blob/main/BLE_PROTOCOL.md)
+— the public, app-agnostic contract both apps and the CLI implement. Keep
+`model/Payloads.kt` in sync with it.
 
 > **First connect prompts for a PIN.** The device requires BLE bonding before
 > accepting writes; Android shows its native pairing dialog for the 6-digit
@@ -78,7 +80,8 @@ sync:
 
 - `model/Payloads.kt` is dependency-free and unit-tested in
   `app/src/test/` — the byte-for-byte wire format must match the firmware's
-  `BLE_PROTOCOL.md` and `tools/led.py`.
+  [`BLE_PROTOCOL.md`](https://github.com/ssayala/esp32-led-simple/blob/main/BLE_PROTOCOL.md)
+  and [`tools/led.py`](https://github.com/ssayala/esp32-led-simple/tree/main/tools).
 - `BleManager` is owned by the `Application` (survives config changes), runs a
   single serial GATT operation queue, and tracks bond state for the auth gate.
 - BLE permissions (`BLUETOOTH_SCAN` with `neverForLocation`, `BLUETOOTH_CONNECT`)
@@ -94,4 +97,10 @@ phones never use this path.
 
 ## License
 
-Proprietary — all rights reserved. Not open source.
+[Apache-2.0](LICENSE) © Sunil Sayala — same license as the LED Ticker firmware
+and Python client. Free to use, build, modify, share, and sell, with attribution.
+
+Note that the GitHub release APKs are signed with the project's private release
+key (kept out of this repo). A fork that ships its own builds must generate its
+own signing key — see the `release` job in
+[`.github/workflows/android.yml`](.github/workflows/android.yml).

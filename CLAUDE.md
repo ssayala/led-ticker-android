@@ -1,8 +1,8 @@
 # CLAUDE.md — LED Ticker Android app
 
-Guidance for Claude Code working in this folder. This is a **private** repo,
-developed cloned as the `android/` subfolder of the firmware repo
-(`esp32-led-simple`), which gitignores it. The firmware, `BLE_PROTOCOL.md`
+Guidance for Claude Code working in this folder. This is an open-source
+(Apache-2.0) repo, developed cloned as the `android/` subfolder of the firmware
+repo (`esp32-led-simple`), which gitignores it. The firmware, `BLE_PROTOCOL.md`
 (the shared wire contract), and the `tools/led.py` CLI sit one level up at
 `../` during development.
 
@@ -42,8 +42,8 @@ auto-runs simulated-device mode there (`BleManager.isEmulator()`).
 - Keep parity with the iOS app's behaviour (dirty tracking, optimistic writes,
   prereq gating, debounced category writes, countdown timer). When the protocol
   changes, update `Payloads.kt` + its tests first.
-- Don't add app references back into the **public** firmware repo's committed
-  files (its root `CLAUDE.md`, `README.md`, etc.) — app-specific guidance lives
-  here, in this private repo.
+- The firmware repo's committed docs may link to this public Android repo, but
+  keep **iOS**-specific details out of them (iOS is App-Store-only, no public
+  source) — app-specific guidance lives here, in this repo.
 - BLE callbacks marshal onto the main scope before touching state; writes are
   gated on `authed` (Auth char write is the only exception).
