@@ -14,3 +14,23 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # Keep the app's Gradle dependencies (AndroidX, Compose, Kotlin, AGP, ...)
+  # current. Dependabot reads gradle/libs.versions.toml; the shared `kotlin`
+  # version ref keeps the Kotlin plugins bumped together.
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+    open-pull-requests-limit: 5
+    groups:
+      # Bundle low-risk minor/patch bumps into one PR; majors (which may have
+      # breaking changes) come as their own PRs so they're reviewed in isolation.
+      gradle-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
