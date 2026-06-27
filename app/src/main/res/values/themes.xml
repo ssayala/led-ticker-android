@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bare platform theme: all real styling is done in Compose
+         (LedTickerTheme). NoActionBar + transparent system bars so
+         enableEdgeToEdge() in MainActivity can draw behind them. -->
+    <style name="Theme.LEDTicker" parent="android:Theme.DeviceDefault.DayNight">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>
