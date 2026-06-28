@@ -76,16 +76,15 @@ first open and is gitignored — set it manually if building purely from the CLI
 
 ## Architecture
 
-The structure mirrors the iOS app one-to-one so the two stay easy to keep in
-sync:
+The app is layered to keep the wire format isolated from transport and UI:
 
-| Concern | iOS | Android |
-|---|---|---|
-| Pure wire-format layer | `Payloads.swift` | `model/Payloads.kt` (+ `WeatherLocation.kt`) |
-| BLE transport | `BLEManager.swift` (CoreBluetooth) | `ble/BleManager.kt` (Android `BluetoothGatt`) |
-| Shared app state | `AppState` (`ObservableObject`) | `data/AppState.kt` (`ViewModel`, Compose state) |
-| Location geocoding | `LocationSearch` (MapKit) | `data/LocationSearch.kt` (`Geocoder`) |
-| Tabs / screens | SwiftUI tabs | Compose `ui/*Screen.kt` |
+| Layer | File |
+|---|---|
+| Pure wire-format layer | `model/Payloads.kt` (+ `WeatherLocation.kt`) |
+| BLE transport | `ble/BleManager.kt` (Android `BluetoothGatt`) |
+| Shared app state | `data/AppState.kt` (`ViewModel`, Compose state) |
+| Location geocoding | `data/LocationSearch.kt` (`Geocoder`) |
+| Tabs / screens | Compose `ui/*Screen.kt` |
 
 - `model/Payloads.kt` is dependency-free and unit-tested in
   `app/src/test/` — the byte-for-byte wire format must match the firmware's
